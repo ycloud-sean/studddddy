@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 1 FastAPI 学习笔记</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5d667a;
+      --line: #dfe4ee;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --code-bg: #101828;
+      --code-ink: #e5edf8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    header {
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      color: inherit;
+      font-size: 14px;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .item {
+      min-height: 132px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .item span {
+      color: var(--muted);
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      padding: 14px 16px;
+      border-left: 4px solid var(--blue);
+      background: #f8fbff;
+      border-radius: 6px;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border-left: 4px solid var(--amber);
+      background: #fff8ed;
+      border-radius: 6px;
+      color: #55310c;
+    }
+
+    .success {
+      padding: 14px 16px;
+      border-left: 4px solid var(--green);
+      background: #effaf2;
+      border-radius: 6px;
+      color: #123f24;
+    }
+
+    .warning {
+      padding: 14px 16px;
+      border-left: 4px solid var(--red);
+      background: #fff1f2;
+      border-radius: 6px;
+      color: #5f111b;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      background: var(--paper);
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5fb;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .checklist {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .checklist li {
+      margin: 8px 0;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 1080px);
+        padding-top: 18px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Day 1 FastAPI 学习笔记</h1>
+      <p class="subtitle">今天的核心不是写很多代码，而是完整跑通一次：创建虚拟环境、安装 FastAPI、写第一个接口、启动服务、访问自动文档。</p>
+      <div class="meta">
+        <span class="pill">主题：第一个 FastAPI 应用</span>
+        <span class="pill">项目：my_day01</span>
+        <span class="pill">入口文件：main.py</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>今日目标</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>1. 理解虚拟环境</strong>
+          <span>知道 `.venv` 是项目自己的 Python 环境，依赖安装在这里，不污染系统 Python。</span>
+        </div>
+        <div class="item">
+          <strong>2. 跑通 FastAPI</strong>
+          <span>启动服务后能访问 `/`、`/hello`、`/me` 和 `/docs`。</span>
+        </div>
+        <div class="item">
+          <strong>3. 看懂最小代码</strong>
+          <span>理解 `FastAPI()`、`@app.get()`、函数返回字典会变成 JSON。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>虚拟环境</h2>
+      <p>创建虚拟环境：</p>
+      <pre><code>python3 -m venv .venv</code></pre>
+      <p>激活虚拟环境：</p>
+      <pre><code>source .venv/bin/activate</code></pre>
+      <p>安装 FastAPI：</p>
+      <pre><code>python -m pip install "fastapi[standard]"</code></pre>
+      <p>确认正在使用虚拟环境里的 Python：</p>
+      <pre><code>which python
+python --version</code></pre>
+      <p>退出虚拟环境：</p>
+      <pre><code>deactivate</code></pre>
+      <div class="warning">
+        删除虚拟环境前先确认路径，再执行：<code>rm -rf .venv</code>。`.venv` 本质上就是一个普通文件夹。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>今日代码</h2>
+      <p>你今天在 <code>my_day01/main.py</code> 中写了三个接口：</p>
+      <pre><code>from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/")
+async def root():
+    return {"message": "Hello FastAPI"}
+
+
+@app.get("/hello")
+async def hello():
+    return {"message": "你好，FastAPI"}
+
+
+@app.get("/me")
+async def me():
+    return {"name": "liangxin", "content": "fastapi"}</code></pre>
+      <div class="note">
+        Python 常见风格：顶层函数之间空两行；字典里冒号后面加一个空格，例如 <code>{"name": "liangxin"}</code>。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>启动和访问</h2>
+      <p>启动服务：</p>
+      <pre><code>uvicorn my_day01.main:app --reload</code></pre>
+      <p>如果要用 FastAPI CLI，更稳的写法是：</p>
+      <pre><code>python -m fastapi dev my_day01/main.py</code></pre>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>地址</th>
+              <th>作用</th>
+              <th>预期结果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="http://127.0.0.1:8000/" target="_blank">http://127.0.0.1:8000/</a></td>
+              <td>首页接口</td>
+              <td><code>{"message": "Hello FastAPI"}</code></td>
+            </tr>
+            <tr>
+              <td><a href="http://127.0.0.1:8000/hello" target="_blank">http://127.0.0.1:8000/hello</a></td>
+              <td>hello 接口</td>
+              <td><code>{"message": "你好，FastAPI"}</code></td>
+            </tr>
+            <tr>
+              <td><a href="http://127.0.0.1:8000/me" target="_blank">http://127.0.0.1:8000/me</a></td>
+              <td>个人信息接口</td>
+              <td><code>{"name": "liangxin", "content": "fastapi"}</code></td>
+            </tr>
+            <tr>
+              <td><a href="http://127.0.0.1:8000/docs" target="_blank">http://127.0.0.1:8000/docs</a></td>
+              <td>Swagger 自动文档</td>
+              <td>可以看到所有接口并在线测试</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>代码逐句理解</h2>
+      <ul class="steps">
+        <li><code>from fastapi import FastAPI</code>：从 FastAPI 包中导入核心类。</li>
+        <li><code>app = FastAPI()</code>：创建一个 FastAPI 应用对象，后面的接口都会挂在这个对象上。</li>
+        <li><code>@app.get("/")</code>：声明一个 GET 请求接口，访问路径是 `/`。</li>
+        <li><code>async def root()</code>：定义处理请求的函数，浏览器访问 `/` 时会执行它。</li>
+        <li><code>return {"message": "Hello FastAPI"}</code>：返回 Python 字典，FastAPI 会自动转换成 JSON。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>今天遇到的问题</h2>
+      <div class="success">
+        你访问过 <code>/hell0</code>，它返回 404。原因是路径写成了数字 <code>0</code>，而代码里定义的是字母 <code>o</code>：<code>/hello</code>。
+      </div>
+      <p></p>
+      <div class="note">
+        你执行 <code>fastapi dev my_day01/main.py</code> 时，如果跑到了系统的 <code>/opt/homebrew/bin/fastapi</code>，可以改用 <code>python -m fastapi dev my_day01/main.py</code>，这样会优先使用当前虚拟环境里的 Python 包。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Day 1 完成检查</h2>
+      <ul class="checklist">
+        <li>能创建并激活 `.venv`。</li>
+        <li>能安装 <code>fastapi[standard]</code>。</li>
+        <li>能写出 <code>app = FastAPI()</code>。</li>
+        <li>能写出 GET 接口。</li>
+        <li>能启动 <code>uvicorn my_day01.main:app --reload</code>。</li>
+        <li>能访问 <code>/docs</code> 自动文档。</li>
+        <li>知道 404 通常表示路径没有匹配到接口。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>下一步预告</h2>
+      <p>Day 2 会进入 HTTP 基础：GET、POST、PUT、DELETE 和状态码。你会开始写更像真实后端接口的 API。</p>
+    </section>
+
+    <footer>
+      FastAPI Day 1 notes · created for liangxin
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 2 FastAPI 学习笔记</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fc;
+      --paper: #ffffff;
+      --ink: #162033;
+      --muted: #5e687d;
+      --line: #dce3ef;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --code-bg: #0f172a;
+      --code-ink: #e5eefc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    header {
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.15;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      color: inherit;
+      font-size: 14px;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .item {
+      min-height: 126px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .item span {
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+      background: var(--paper);
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5fb;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .steps li {
+      padding: 14px 16px;
+      border-left: 4px solid var(--blue);
+      background: #f8fbff;
+      border-radius: 6px;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border-left: 4px solid var(--amber);
+      background: #fff8ed;
+      border-radius: 6px;
+      color: #55310c;
+    }
+
+    .success {
+      padding: 14px 16px;
+      border-left: 4px solid var(--green);
+      background: #effaf2;
+      border-radius: 6px;
+      color: #123f24;
+    }
+
+    .warning {
+      padding: 14px 16px;
+      border-left: 4px solid var(--red);
+      background: #fff1f2;
+      border-radius: 6px;
+      color: #5f111b;
+    }
+
+    .checklist {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .checklist li {
+      margin: 8px 0;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 1080px);
+        padding-top: 18px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Day 2 FastAPI 学习笔记</h1>
+      <p class="subtitle">今天从最基础的数据结构补起：list 和 dict 怎么配合，`values()` 为什么不能直接下标，`iter()` 和 `next()` 又是怎么工作的，然后把这些概念放回 FastAPI 的 GET / POST / PUT / DELETE 里。</p>
+      <div class="meta">
+        <span class="pill">主题：HTTP 方法</span>
+        <span class="pill">数据结构：list + dict</span>
+        <span class="pill">重点：状态码</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>今天的主线</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>1. 先懂数据</strong>
+          <span>list 用来装一组数据，dict 用来描述一条数据，后面 Todo 的结构就是这两层叠起来。</span>
+        </div>
+        <div class="item">
+          <strong>2. 再懂方法</strong>
+          <span>GET、POST、PUT、DELETE 分别对应查询、新增、更新、删除。</span>
+        </div>
+        <div class="item">
+          <strong>3. 最后懂响应</strong>
+          <span>201 表示创建成功，204 表示删除成功但不返回内容，失败时用 <code>HTTPException</code>。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>list 和 dict 关系</h2>
+      <p>一个 Todo 通常是一个 dict，多个 Todo 放进 list 里。</p>
+      <pre><code>todos = [
+    {"id": 1, "title": "学习 FastAPI", "done": False},
+    {"id": 2, "title": "练习 GET 接口", "done": False},
+]</code></pre>
+      <p>list 负责“装一组”，dict 负责“描述一条”。</p>
+      <div class="note">
+        你可以把 list 理解成书架，把 dict 理解成书架上的一本书。书架可以放很多本书，每本书有自己的标题、状态、编号。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>dict 的三个常用视图</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>写法</th>
+              <th>作用</th>
+              <th>常见用法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>todos.keys()</code></td>
+              <td>取所有 key</td>
+              <td>查看有哪些 id</td>
+            </tr>
+            <tr>
+              <td><code>todos.values()</code></td>
+              <td>取所有 value</td>
+              <td>拿到所有 Todo 对象</td>
+            </tr>
+            <tr>
+              <td><code>todos.items()</code></td>
+              <td>同时取 key 和 value</td>
+              <td>遍历时想同时拿 id 和 Todo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p></p>
+      <pre><code>todos = {
+    1: {"id": 1, "title": "学习 FastAPI Day 2", "done": False}
+}
+
+print(todos.keys())
+print(todos.values())
+print(todos.items())</code></pre>
+    </section>
+
+    <section class="section">
+      <h2>`values()` 为什么不能直接下标</h2>
+      <p><code>todos.values()</code> 返回的是 <code>dict_values</code>，不是 list，所以不能写 <code>todo[0]</code>。</p>
+      <pre><code>todos = {
+    1: {"id": 1, "title": "学习 FastAPI Day 2", "done": False}
+}
+
+todo = todos.values()
+print(todo[0]["id"])  # 会报错</code></pre>
+      <div class="warning">
+        报错信息：<code>TypeError: 'dict_values' object is not subscriptable</code>。意思是这个对象不能用下标取值。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>正确取法</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>方式 1：直接按 key 取</strong>
+          <span>最推荐。知道 id 时直接写 <code>todos[1]</code>。</span>
+        </div>
+        <div class="item">
+          <strong>方式 2：遍历 values</strong>
+          <span>适合处理所有 Todo，写 <code>for todo in todos.values()</code>。</span>
+        </div>
+        <div class="item">
+          <strong>方式 3：转成 list</strong>
+          <span>如果一定要下标，先 <code>list(todos.values())</code>，再取 <code>[0]</code>。</span>
+        </div>
+      </div>
+      <pre><code>todo = todos[1]
+print(todo["id"])
+
+todo_list = list(todos.values())
+print(todo_list[0]["id"])
+
+for todo in todos.values():
+    print(todo["title"])</code></pre>
+    </section>
+
+    <section class="section">
+      <h2>`iter()` 和 `next()`</h2>
+      <p>如果你想一个一个往后取，可以先把 values 变成迭代器。</p>
+      <pre><code>iterator = iter(todos.values())
+first_todo = next(iterator)
+second_todo = next(iterator)</code></pre>
+      <p>但学习阶段更直观的还是：</p>
+      <pre><code>todo_list = list(todos.values())
+first_todo = todo_list[0]
+second_todo = todo_list[1]</code></pre>
+      <div class="success">
+        记忆版：<code>values()</code> 能遍历，<code>list(values())</code> 能下标，<code>todos[id]</code> 最推荐。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>FastAPI Day 2 代码</h2>
+      <p>你今天写的核心代码是一个内存版 Todo API。</p>
+      <pre><code>from fastapi import FastAPI, HTTPException, Response, status
+
+app = FastAPI()
+
+todos = {
+    1: {"id": 1, "title": "学习 FastAPI Day 2", "done": False}
+}
+
+
+@app.get("/todos")
+async def get_todos():
+    return {"data": list(todos.values())}
+
+
+@app.get("/todos/{todo_id}")
+async def get_todo(todo_id: int):
+    if todo_id not in todos:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todos[todo_id]
+
+
+@app.post("/todos", status_code=status.HTTP_201_CREATED)
+async def create_todo(title: str):
+    todo_id = max(todos.keys()) + 1
+    todos[todo_id] = {"id": todo_id, "title": title, "done": False}
+    return todos[todo_id]
+
+
+@app.put("/todos/{todo_id}")
+async def update_todo(todo_id: int, title: str, done: bool = False):
+    if todo_id not in todos:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    todos[todo_id] = {"id": todo_id, "title": title, "done": done}
+    return todos[todo_id]
+
+
+@app.delete("/todos/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_todo(todo_id: int):
+    if todo_id not in todos:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    del todos[todo_id]
+    return Response(status_code=status.HTTP_204_NO_CONTENT)</code></pre>
+    </section>
+
+    <section class="section">
+      <h2>状态码怎么理解</h2>
+      <ul class="steps">
+        <li><code>200 OK</code>：成功，通常还会返回数据。</li>
+        <li><code>201 Created</code>：创建成功，适合 POST 新增接口。</li>
+        <li><code>204 No Content</code>：删除成功，但不返回内容。</li>
+        <li><code>404 Not Found</code>：资源不存在。</li>
+      </ul>
+      <p></p>
+      <div class="note">
+        <code>status_code=status.HTTP_201_CREATED</code> 管的是“成功时的默认状态码”。失败时你要自己 <code>raise HTTPException</code>。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>今天最容易踩的坑</h2>
+      <ul class="checklist">
+        <li><code>dict_values</code> 不能直接下标。</li>
+        <li>DELETE 成功时如果不返回内容，用 <code>204</code> 更合适。</li>
+        <li>查找某个 Todo 时，知道 key 就直接 <code>todos[id]</code>，比从 <code>values()</code> 里绕一圈更清楚。</li>
+        <li><code>title: str</code>、<code>done: bool</code> 这种类型注解会影响参数校验。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Day 2 完成检查</h2>
+      <ul class="checklist">
+        <li>能说清楚 list 和 dict 的区别。</li>
+        <li>知道 <code>values()</code>、<code>keys()</code>、<code>items()</code> 分别做什么。</li>
+        <li>知道为什么 <code>dict_values</code> 不能直接写 <code>[0]</code>。</li>
+        <li>知道 <code>201</code> 和 <code>204</code> 各自适合什么场景。</li>
+        <li>能用 GET、POST、PUT、DELETE 写一个内存版 Todo API。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>下一步</h2>
+      <p>Day 3 会进入路径参数和查询参数。那时你会更清楚“接口怎么接收输入”。</p>
+    </section>
+
+    <footer>
+      FastAPI Day 2 notes · created for liangxin
+    </footer>
+  </main>
+</body>
+</html>
