@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 3 FastAPI 学习笔记</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fc;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5d667a;
+      --line: #dfe4ee;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --cyan: #0e7490;
+      --code-bg: #101828;
+      --code-ink: #e5edf8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    header {
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      color: inherit;
+      font-size: 14px;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .item {
+      min-height: 126px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .item span {
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: var(--paper);
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5fb;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .note,
+    .success,
+    .warning {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+    }
+
+    .note {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e3a8a;
+    }
+
+    .success {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #14532d;
+    }
+
+    .warning {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #7c2d12;
+    }
+
+    .formula {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .formula-box {
+      min-height: 92px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .formula-sign {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .steps,
+    .checklist {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .steps li,
+    .checklist li {
+      margin: 7px 0;
+    }
+
+    .tag-blue,
+    .tag-green,
+    .tag-amber,
+    .tag-cyan {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tag-blue {
+      background: #dbeafe;
+      color: var(--blue);
+    }
+
+    .tag-green {
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    .tag-amber {
+      background: #fef3c7;
+      color: var(--amber);
+    }
+
+    .tag-cyan {
+      background: #cffafe;
+      color: var(--cyan);
+    }
+
+    footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 24px, 1080px);
+        padding-top: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .grid,
+      .grid.two,
+      .formula {
+        grid-template-columns: 1fr;
+      }
+
+      .formula-sign {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Day 3 FastAPI 学习笔记</h1>
+      <p class="subtitle">今天只抓一件事：接口怎么接收输入。重点是路径参数、查询参数、类型注解，以及 <code>Annotated</code>、<code>Path</code>、<code>Query</code> 各自负责什么。</p>
+      <div class="meta">
+        <span class="pill">主题：参数接收</span>
+        <span class="pill">代码：my_day03/main.py</span>
+        <span class="pill">接口：GET /products</span>
+        <span class="pill">接口：GET /products/{product_id}</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>今天结论</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>路径参数</strong>
+          <span>由 URL 路径里的 <code>{}</code> 决定，例如 <code>/products/{product_id}</code>。</span>
+        </div>
+        <div class="item">
+          <strong>查询参数</strong>
+          <span>函数参数没有出现在路径里时，FastAPI 通常会把它当成查询参数。</span>
+        </div>
+        <div class="item">
+          <strong>Annotated</strong>
+          <span>负责把类型、校验规则、接口文档说明写得更清楚。</span>
+        </div>
+      </div>
+      <div class="success">
+        一句话记法：<code>/products/{product_id}</code> 决定 <code>product_id</code> 从路径来，<code>Query(...)</code> 和 <code>Path(...)</code> 主要负责补充规则、校验和文档说明。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>两个接口怎么分工</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>接口</th>
+              <th>作用</th>
+              <th>参数来源</th>
+              <th>适合场景</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>GET /products</code></td>
+              <td>查询商品列表</td>
+              <td><code>?q=鼠标&amp;category=键鼠</code></td>
+              <td>搜索、筛选、分页、排序</td>
+            </tr>
+            <tr>
+              <td><code>GET /products/{product_id}</code></td>
+              <td>查询单个商品详情</td>
+              <td><code>/products/1</code></td>
+              <td>通过唯一 ID 找一个资源</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>路径参数</h2>
+      <p>路径参数是 URL 路径本身的一部分，通常表示“我要找哪一个资源”。</p>
+      <pre><code>@app.get("/products/{product_id}")
+async def get_product(
+    product_id: Annotated[
+        int,
+        Path(gt=0, description="商品 ID，必须大于 0"),
+    ],
+):
+    product = products.get(product_id)</code></pre>
+      <div class="formula">
+        <div class="formula-box">
+          <strong>路径模板</strong>
+          <p><code>/products/{product_id}</code></p>
+        </div>
+        <div class="formula-sign">对应</div>
+        <div class="formula-box">
+          <strong>函数参数名</strong>
+          <p><code>product_id</code></p>
+        </div>
+      </div>
+      <div class="note">
+        <code>Path(gt=0)</code> 的意思是：这个参数来自路径，并且必须大于 0。真正让它成为路径参数的关键，是路径里写了 <code>{product_id}</code>。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>查询参数</h2>
+      <p>查询参数写在 <code>?</code> 后面，通常表示“我要怎么查”。</p>
+      <pre><code>GET /products?q=鼠标&amp;category=键鼠&amp;in_stock=true</code></pre>
+      <p>对应代码：</p>
+      <pre><code>@app.get("/products")
+async def list_products(
+    q: Annotated[
+        Optional[str],
+        Query(description="按商品名称关键字搜索"),
+    ] = None,
+    category: Annotated[
+        Optional[str],
+        Query(description="按商品分类筛选"),
+    ] = None,
+):</code></pre>
+      <div class="note">
+        <code>/products</code> 路径里没有 <code>{q}</code>、<code>{category}</code>，所以这些函数参数会作为查询参数接收。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Annotated 怎么读</h2>
+      <p><code>Annotated</code> 可以理解成“类型 + 额外说明”。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>写法</th>
+              <th>类型含义</th>
+              <th>额外规则</th>
+              <th>默认值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Annotated[Optional[str], Query(...)] = None</code></td>
+              <td>字符串，或者不传</td>
+              <td>作为查询参数，并生成文档说明</td>
+              <td>不传时是 <code>None</code></td>
+            </tr>
+            <tr>
+              <td><code>Annotated[float, Query(ge=0)] = 0</code></td>
+              <td>数字</td>
+              <td>必须大于或等于 0</td>
+              <td>不传时是 <code>0</code></td>
+            </tr>
+            <tr>
+              <td><code>Annotated[int, Query(ge=1, le=20)] = 20</code></td>
+              <td>整数</td>
+              <td>范围是 1 到 20</td>
+              <td>不传时是 <code>20</code></td>
+            </tr>
+            <tr>
+              <td><code>Annotated[int, Path(gt=0)]</code></td>
+              <td>整数</td>
+              <td>路径参数，必须大于 0</td>
+              <td>路径参数必须传</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Day 3 参数清单</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>参数</th>
+              <th>来源</th>
+              <th>类型</th>
+              <th>作用</th>
+              <th>示例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>q</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>Optional[str]</code></td>
+              <td>按商品名称关键字搜索</td>
+              <td><code>/products?q=鼠标</code></td>
+            </tr>
+            <tr>
+              <td><code>category</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>Optional[str]</code></td>
+              <td>按商品分类筛选</td>
+              <td><code>/products?category=键鼠</code></td>
+            </tr>
+            <tr>
+              <td><code>min_price</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>float</code></td>
+              <td>最低价格</td>
+              <td><code>/products?min_price=200</code></td>
+            </tr>
+            <tr>
+              <td><code>max_price</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>float</code></td>
+              <td>最高价格</td>
+              <td><code>/products?max_price=500</code></td>
+            </tr>
+            <tr>
+              <td><code>in_stock</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>Optional[bool]</code></td>
+              <td>是否只筛选有库存商品</td>
+              <td><code>/products?in_stock=true</code></td>
+            </tr>
+            <tr>
+              <td><code>limit</code></td>
+              <td><span class="tag-blue">Query</span></td>
+              <td><code>int</code></td>
+              <td>最多返回多少条</td>
+              <td><code>/products?limit=2</code></td>
+            </tr>
+            <tr>
+              <td><code>product_id</code></td>
+              <td><span class="tag-green">Path</span></td>
+              <td><code>int</code></td>
+              <td>查询某个商品详情</td>
+              <td><code>/products/1</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>列表接口过滤顺序</h2>
+      <p><code>list_products</code> 的核心逻辑是：先拿全部商品，再一层一层按条件筛掉不符合的商品。</p>
+      <ol class="steps">
+        <li>用 <code>list(products.values())</code> 拿到所有商品。</li>
+        <li>如果传了 <code>q</code>，就按名称关键字筛选。</li>
+        <li>如果传了 <code>category</code>，就按分类筛选。</li>
+        <li>如果传了 <code>in_stock</code>，就按库存状态筛选。</li>
+        <li>最后按 <code>min_price</code> 和 <code>max_price</code> 筛价格。</li>
+        <li>返回时用 <code>result[:limit]</code> 控制最多返回多少条。</li>
+      </ol>
+      <pre><code>result = list(products.values())
+
+if q:
+    result = [
+        product
+        for product in result
+        if q.lower() in product["name"].lower()
+    ]
+
+return {
+    "count": len(result),
+    "items": result[:limit],
+}</code></pre>
+    </section>
+
+    <section class="section">
+      <h2>类型注解帮你做什么</h2>
+      <div class="grid two">
+        <div class="item">
+          <strong>自动类型转换</strong>
+          <span><code>/products?limit=2</code> 里的 <code>2</code> 原本是字符串，但 FastAPI 会按 <code>int</code> 转成整数。</span>
+        </div>
+        <div class="item">
+          <strong>自动参数校验</strong>
+          <span><code>Query(ge=1, le=20)</code> 会限制 <code>limit</code> 只能在 1 到 20 之间。</span>
+        </div>
+      </div>
+      <div class="warning">
+        URL 里所有内容本质上都是文本。你写的 <code>int</code>、<code>float</code>、<code>bool</code> 会告诉 FastAPI 应该怎么解析这些文本。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>可以这样测试</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>测试目标</th>
+              <th>请求</th>
+              <th>预期结果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>查全部商品</td>
+              <td><code>GET /products</code></td>
+              <td>返回 4 个商品，<code>count</code> 是 4。</td>
+            </tr>
+            <tr>
+              <td>按关键字查</td>
+              <td><code>GET /products?q=鼠标</code></td>
+              <td>只返回名称里包含“鼠标”的商品。</td>
+            </tr>
+            <tr>
+              <td>按分类查</td>
+              <td><code>GET /products?category=键鼠</code></td>
+              <td>只返回分类是“键鼠”的商品。</td>
+            </tr>
+            <tr>
+              <td>按价格查</td>
+              <td><code>GET /products?min_price=200&amp;max_price=500</code></td>
+              <td>只返回价格在 200 到 500 之间的商品。</td>
+            </tr>
+            <tr>
+              <td>按库存查</td>
+              <td><code>GET /products?in_stock=true</code></td>
+              <td>只返回有库存的商品。</td>
+            </tr>
+            <tr>
+              <td>查商品详情</td>
+              <td><code>GET /products/1</code></td>
+              <td>返回 <code>id=1</code> 的商品。</td>
+            </tr>
+            <tr>
+              <td>查不存在商品</td>
+              <td><code>GET /products/999</code></td>
+              <td>返回 <code>404</code>，提示“商品不存在”。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>常见坑</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>把 ID 放进查询参数</strong>
+          <span>详情接口更常见写法是 <code>/products/1</code>，不是 <code>/products?product_id=1</code>。</span>
+        </div>
+        <div class="item">
+          <strong>忘记默认值</strong>
+          <span>想让查询参数可选，就要写类似 <code>= None</code> 或 <code>= 20</code> 的默认值。</span>
+        </div>
+        <div class="item">
+          <strong>误解 Query 和 Path</strong>
+          <span><code>Query</code>、<code>Path</code> 不只是“分类标签”，它们还会影响校验和接口文档。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>今天必须会说清楚</h2>
+      <ul class="checklist">
+        <li><code>product_id</code> 是路径参数，因为路径写了 <code>/products/{product_id}</code>。</li>
+        <li><code>q</code>、<code>category</code>、<code>limit</code> 是查询参数，因为它们是 <code>/products</code> 的筛选条件。</li>
+        <li><code>Path(gt=0)</code> 表示路径参数必须大于 0。</li>
+        <li><code>Query(ge=1, le=20)</code> 表示查询参数有范围限制。</li>
+        <li><code>Optional[str] = None</code> 表示这个参数可以不传。</li>
+      </ul>
+      <div class="success">
+        Day 3 过关标准：你看到一个接口时，能判断每个参数从路径来、从查询字符串来，还是从请求体来。今天先掌握前两种。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>下一步练习</h2>
+      <ul class="steps">
+        <li>增加 <code>sort_by</code>，支持按价格排序。</li>
+        <li>增加 <code>page</code> 和 <code>page_size</code>，做简单分页。</li>
+        <li>给 <code>min_price &gt; max_price</code> 增加错误提示。</li>
+        <li>把商品数据拆到单独变量或模块里，为后面学习请求体和数据库做准备。</li>
+      </ul>
+    </section>
+
+    <footer>
+      FastAPI Day 3 notes · created for liangxin
+    </footer>
+  </main>
+</body>
+</html>
