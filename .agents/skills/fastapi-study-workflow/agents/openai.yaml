@@ -1,4 +1,4 @@
 interface:
   display_name: "FastAPI 学习流程"
   short_description: "约束 FastAPI 学习文件与笔记提交流程"
-  default_prompt: "Use $fastapi-study-workflow when continuing this FastAPI learning project."
+  default_prompt: "使用 $fastapi-study-workflow 继续这个 FastAPI 学习项目。"
