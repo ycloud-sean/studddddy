@@ -1,6 +1,6 @@
 ---
 name: fastapi-study-workflow
-description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 day/topic、创建教程 Markdown、总结笔记、生成 HTML 笔记、提交或 push 学习产物时使用。约束项目文件布局和语言：教程 MD 必须用中文写并放在对应 day/topic 目录中，HTML 笔记放在仓库根目录，新学习内容时不要立即生成笔记，总结笔记完成后使用中文 commit 并 push。"
+description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 day/topic、创建教程 Markdown、练习代码、总结笔记、生成 HTML 笔记、提交或 push 学习产物时使用。约束项目文件布局和语言：每天一个 my_dayXX 目录，教程 MD 和当天代码放在同一目录中，教程 MD 必须用中文写，HTML 笔记放在仓库根目录，新学习内容时不要立即生成笔记，总结笔记完成后使用中文 commit 并 push。"
 ---
 
 # FastAPI 学习流程
@@ -9,8 +9,8 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
 
 在这个仓库里创建、移动、提交或推送学习文件前，先执行这些规则。
 
-1. 每次开始新的学习 day 或 topic 时，在仓库根目录创建对应文件夹，例如 `day4/` 或 `day-request-body/`。
-2. 教程 Markdown 文件必须放在对应文件夹中，例如 `day4/day4-fastapi-tutorial.md`。
+1. 每次开始新的学习 day 时，在仓库根目录创建当天文件夹，命名格式使用 `my_dayXX`，例如 `my_day04/`。
+2. 教程 Markdown 文件必须和当天代码放在同一个 `my_dayXX/` 文件夹中，例如 `my_day04/day4-fastapi-tutorial.md` 和 `my_day04/main.py`。
 3. 教程 Markdown 的面向人说明必须使用中文。代码标识符、文件名、导入路径、API 路径和命令示例保持正常技术写法。
 4. 学习新内容时，不要立即生成 HTML 笔记文件。
 5. 只有当用户明确说“总结笔记”、“整理笔记”、“生成笔记”等需求时，才生成或更新 HTML 笔记。
@@ -23,10 +23,10 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
 
 当用户说继续学习新的 day 或 topic 时：
 
-1. 根据用户请求或学习计划确认 day/topic。
-2. 如果对应文件夹不存在，先创建对应文件夹。
-3. 在对应文件夹里编写教程 Markdown 文件，并用中文写面向人的解释内容。
-4. 如果本节课需要可运行代码，再创建或更新练习代码。代码目录沿用现有风格，例如 `my_day04/main.py`。
+1. 根据用户请求或学习计划确认 day 编号。
+2. 如果当天文件夹不存在，先按 `my_dayXX` 格式创建文件夹，例如 Day 4 使用 `my_day04/`。
+3. 在当天 `my_dayXX/` 文件夹里编写教程 Markdown 文件，并用中文写面向人的解释内容。
+4. 如果本节课需要可运行代码，也放在同一个 `my_dayXX/` 文件夹里，例如 `my_day04/main.py`。
 5. 这个阶段不要创建根目录 HTML 笔记文件。
 6. 回复用户时说明创建了哪些教程和代码文件，并提醒笔记会在用户要求总结后再生成。
 
@@ -34,7 +34,7 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
 
 当用户要求总结、整理或生成笔记时：
 
-1. 读取对应 day/topic 文件夹中的教程 Markdown 文件。
+1. 读取对应 `my_dayXX/` 文件夹中的教程 Markdown 文件。
 2. 结合当前对话上下文，尤其是本节课里的问答内容，整理进笔记。
 3. 在仓库根目录生成或更新 HTML 笔记文件。
 4. HTML 笔记风格默认延续现有笔记样式，除非用户要求换风格。
@@ -49,10 +49,9 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
 
 ```text
 .
-├── day4/
-│   └── day4-fastapi-tutorial.md
 ├── day4-fastapi-notes.html
 ├── my_day04/
+│   ├── day4-fastapi-tutorial.md
 │   └── main.py
 └── .agents/
     └── skills/
@@ -62,7 +61,7 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
                 └── openai.yaml
 ```
 
-如果旧课程已经用了不同布局，不要为了统一格式去改无关历史文件。这个规则默认应用到新的学习内容，以及当前任务会触碰到的学习文件。
+如果旧课程已经用了不同布局，不要为了统一格式去改无关历史文件。这个规则默认应用到新的学习内容，以及当前任务会触碰到的学习文件。对于已有课程，如果同一天同时存在教程 MD 和代码，也应整理到同一个 `my_dayXX/` 文件夹中。
 
 ## 提交和推送规则
 
@@ -77,7 +76,8 @@ description: "用于这个 FastAPI 学习仓库。当 Codex 继续新的学习 d
 
 ## 防护规则
 
-- 新课程的教程 Markdown 不要放在仓库根目录。
+- 新课程的教程 Markdown 不要放在仓库根目录，也不要放在单独的 `dayXX/` 文件夹中。
+- 当天代码和当天教程 Markdown 不要拆在两个目录里；统一放进对应 `my_dayXX/` 文件夹。
 - 教程 Markdown 的说明内容不要写英文，除非用户明确要求英文。
 - HTML 笔记不要放进 day/topic 文件夹。
 - 不要只凭记忆生成笔记；必须读取教程 Markdown，并结合真实对话上下文。
