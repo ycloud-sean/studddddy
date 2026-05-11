@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Day 7 FastAPI 学习笔记</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f8fc;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #5d667a;
+      --line: #dfe4ee;
+      --blue: #2563eb;
+      --green: #15803d;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --cyan: #0e7490;
+      --code-bg: #101828;
+      --code-ink: #e5edf8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    header {
+      padding: 28px 0 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95em;
+    }
+
+    pre {
+      margin: 12px 0 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: 8px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      color: inherit;
+      font-size: 14px;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .subtitle {
+      max-width: 820px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .item {
+      min-height: 126px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .item span {
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: var(--paper);
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5fb;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .note,
+    .success,
+    .warning {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+    }
+
+    .note {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e3a8a;
+    }
+
+    .success {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #14532d;
+    }
+
+    .warning {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #7c2d12;
+    }
+
+    .steps,
+    .checklist {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .steps li,
+    .checklist li {
+      margin: 7px 0;
+    }
+
+    .tag-blue,
+    .tag-green,
+    .tag-amber,
+    .tag-cyan {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tag-blue {
+      background: #dbeafe;
+      color: var(--blue);
+    }
+
+    .tag-green {
+      background: #dcfce7;
+      color: var(--green);
+    }
+
+    .tag-amber {
+      background: #fef3c7;
+      color: var(--amber);
+    }
+
+    .tag-cyan {
+      background: #cffafe;
+      color: var(--cyan);
+    }
+
+    footer {
+      margin-top: 32px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 24px, 1080px);
+        padding-top: 20px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .section {
+        padding: 18px;
+      }
+
+      .grid,
+      .grid.two {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Day 7 FastAPI 学习笔记</h1>
+      <p class="subtitle">今天是第一周收尾：不急着加新功能，而是把 Day 6 的 Todo API 做复盘、重构和文档整理，让它更像一个可以交付的小项目。</p>
+      <div class="meta">
+        <span class="pill">主题：复盘和重构</span>
+        <span class="pill">项目：Todo API</span>
+        <span class="pill">代码：my_day07/main.py</span>
+        <span class="pill">文档：README.md、api-docs.md</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>今天结论</h2>
+      <div class="grid">
+        <div class="item">
+          <strong>重构不是重写</strong>
+          <span>重构是在功能基本不变的前提下，让代码更清楚、更少重复、更容易维护。</span>
+        </div>
+        <div class="item">
+          <strong>自动文档也要整理</strong>
+          <span><code>tags</code>、<code>summary</code>、<code>description</code> 会直接改善 <code>/docs</code> 的可读性。</span>
+        </div>
+        <div class="item">
+          <strong>交付物不只有代码</strong>
+          <span><code>README.md</code> 说明怎么运行，<code>api-docs.md</code> 说明接口怎么调用。</span>
+        </div>
+      </div>
+      <div class="success">
+        一句话记法：能跑是第一步；Day 7 的重点是让未来的自己和别人都能看懂、测懂、接着改。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>第一周能力地图</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>能力</th>
+              <th>对应内容</th>
+              <th>Day 7 里的体现</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag-green">应用启动</span></td>
+              <td><code>FastAPI()</code>、<code>uvicorn</code></td>
+              <td>设置应用标题、描述、版本号。</td>
+            </tr>
+            <tr>
+              <td><span class="tag-blue">参数接收</span></td>
+              <td>路径参数、查询参数、请求体</td>
+              <td><code>/todos/{todo_id}</code>、<code>/todos?completed=false</code>、<code>POST /todos</code>。</td>
+            </tr>
+            <tr>
+              <td><span class="tag-cyan">数据模型</span></td>
+              <td>Pydantic 请求模型和响应模型</td>
+              <td><code>TodoCreate</code>、<code>TodoPatch</code>、<code>TodoRead</code>。</td>
+            </tr>
+            <tr>
+              <td><span class="tag-amber">接口行为</span></td>
+              <td>状态码、错误处理、CRUD</td>
+              <td><code>201</code>、<code>204</code>、<code>404</code> 和完整 Todo CRUD。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Day 7 整理了什么</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>整理点</th>
+              <th>目的</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>增加 <code>title</code>、<code>description</code>、<code>version</code></td>
+              <td>让 <code>/docs</code> 首页更像真实 API。</td>
+            </tr>
+            <tr>
+              <td>增加 <code>tags_metadata</code></td>
+              <td>按 <code>health</code>、<code>todos</code>、<code>review</code> 给接口分组。</td>
+            </tr>
+            <tr>
+              <td>给接口增加 <code>summary</code> 和 <code>description</code></td>
+              <td>让接口在自动文档里更容易理解。</td>
+            </tr>
+            <tr>
+              <td>抽出 <code>TodoBase</code> 和 <code>get_next_todo_id()</code></td>
+              <td>减少重复，让代码意图更清楚。</td>
+            </tr>
+            <tr>
+              <td>新增 <code>/health</code> 和 <code>/todos/stats</code></td>
+              <td>补一个健康检查和一个复盘辅助接口。</td>
+            </tr>
+            <tr>
+              <td>新增 <code>README.md</code> 和 <code>api-docs.md</code></td>
+              <td>练习项目说明和接口文档。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>FastAPI 文档整理</h2>
+      <p>Day 7 先定义接口分组，再传给 <code>FastAPI</code>。</p>
+      <pre><code>tags_metadata = [
+    {
+        "name": "health",
+        "description": "检查服务是否正常运行。",
+    },
+    {
+        "name": "todos",
+        "description": "内存版 Todo 的新增、查询、修改和删除接口。",
+    },
+    {
+        "name": "review",
+        "description": "第一周小项目的复盘辅助接口。",
+    },
+]
+
+app = FastAPI(
+    title="FastAPI Day 7 Todo API",
+    description="第一周复盘项目：把 Day 6 的内存版 Todo CRUD 整理成更清楚的代码和接口文档。",
+    version="1.0.0",
+    openapi_tags=tags_metadata,
+)</code></pre>
+      <div class="note">
+        这些配置不是给 Python 运行逻辑看的，而是给 API 使用者看的。文档越清楚，沟通成本越低。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>接口说明怎么写</h2>
+      <p>Day 7 给接口补了 <code>tags</code>、<code>summary</code> 和 <code>description</code>。</p>
+      <pre><code>@app.get(
+    "/todos",
+    response_model=TodoListResponse,
+    tags=["todos"],
+    summary="查询 Todo 列表",
+    description="支持按关键字、完成状态、最低优先级筛选，并限制返回数量。",
+)
+async def list_todos(...):
+    ...</code></pre>
+      <div class="success">
+        <code>summary</code> 适合写一句话标题，<code>description</code> 适合写更完整的说明，<code>responses</code> 适合补充错误状态码。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>抽出 TodoBase</h2>
+      <p><code>TodoCreate</code> 和 <code>TodoReplace</code> 都需要 <code>title</code>、<code>description</code>、<code>priority</code>，所以 Day 7 把公共字段放进 <code>TodoBase</code>。</p>
+      <pre><code>class TodoBase(BaseModel):
+    title: Annotated[
+        str,
+        Field(min_length=1, max_length=80, description="待办标题"),
+    ]
+    description: Annotated[
+        Optional[str],
+        Field(max_length=300, description="待办说明"),
+    ] = None
+    priority: Annotated[
+        int,
+        Field(ge=1, le=5, description="优先级，1 最低，5 最高"),
+    ] = 3
+
+
+class TodoCreate(TodoBase):
+    ...
+
+
+class TodoReplace(TodoBase):
+    completed: bool = False</code></pre>
+      <div class="note">
+        这个抽取很小，但方向很对：重复字段越集中，后面调整字段规则时越不容易漏改。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>TodoPatch 为什么单独写</h2>
+      <p><code>TodoPatch</code> 没有继承 <code>TodoBase</code>，因为局部更新里的字段都应该是可选的。</p>
+      <pre><code>class TodoPatch(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[int] = None
+    completed: Optional[bool] = None</code></pre>
+      <div class="warning">
+        如果 <code>TodoPatch</code> 继承 <code>TodoBase</code>，那 <code>title</code> 会变成必填。这样只传 <code>{"completed": true}</code> 的局部更新就会失败。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>健康检查和统计接口</h2>
+      <div class="grid two">
+        <div class="item">
+          <strong><code>GET /health</code></strong>
+          <span>返回服务状态、服务名和版本号。以后学部署时，健康检查会很常见。</span>
+        </div>
+        <div class="item">
+          <strong><code>GET /todos/stats</code></strong>
+          <span>返回总数、完成数、未完成数、高优先级数量，用来复盘当前内存数据。</span>
+        </div>
+      </div>
+      <pre><code>def build_todo_stats() -> TodoStats:
+    total = len(todos)
+    completed_count = sum(
+        1
+        for todo in todos.values()
+        if todo["completed"]
+    )
+    high_priority_count = sum(
+        1
+        for todo in todos.values()
+        if todo["priority"] >= 4
+    )
+
+    return TodoStats(
+        total=total,
+        completed=completed_count,
+        active=total - completed_count,
+        high_priority=high_priority_count,
+    )</code></pre>
+      <div class="success">
+        这里也体现了重构思路：接口函数处理 HTTP，统计逻辑放到普通 Python 函数里。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>README 和接口文档</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>文件</th>
+              <th>解决的问题</th>
+              <th>应该包含什么</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>README.md</code></td>
+              <td>别人第一次打开项目时，怎么理解和运行它。</td>
+              <td>项目介绍、运行方式、接口列表、测试顺序、当前限制。</td>
+            </tr>
+            <tr>
+              <td><code>api-docs.md</code></td>
+              <td>别人调用接口时，需要知道请求和响应怎么写。</td>
+              <td>方法、路径、参数、请求体、响应示例、状态码。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">
+        <code>/docs</code> 是交互式文档，<code>api-docs.md</code> 是可阅读、可沉淀的接口说明。两者可以互补。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>验收顺序</h2>
+      <ol class="steps">
+        <li>启动服务：<code>uvicorn my_day07.main:app --reload</code></li>
+        <li>打开文档：<code>http://127.0.0.1:8000/docs</code></li>
+        <li>执行 <code>GET /health</code>，确认服务正常。</li>
+        <li>执行 <code>GET /todos</code>，查看 Todo 列表。</li>
+        <li>执行 <code>GET /todos/stats</code>，查看统计信息。</li>
+        <li>执行 <code>POST /todos</code>，新增 Todo。</li>
+        <li>执行 <code>PATCH /todos/{todo_id}</code>，只修改 <code>completed</code>。</li>
+        <li>执行 <code>PUT /todos/{todo_id}</code>，整体替换 Todo。</li>
+        <li>执行 <code>DELETE /todos/{todo_id}</code>，删除 Todo。</li>
+        <li>再次查询被删除的 Todo，确认返回 <code>404</code>。</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>复盘问题</h2>
+      <ul class="checklist">
+        <li><code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>PATCH</code>、<code>DELETE</code> 分别适合什么场景？</li>
+        <li>路径参数和查询参数有什么区别？</li>
+        <li>请求体为什么适合放复杂对象？</li>
+        <li><code>response_model</code> 为什么能过滤内部字段？</li>
+        <li><code>HTTPException(status_code=404)</code> 适合什么时候用？</li>
+        <li><code>PATCH</code> 为什么要配合 <code>model_dump(exclude_unset=True)</code>？</li>
+        <li><code>204 No Content</code> 为什么不应该再返回 JSON？</li>
+        <li><code>README.md</code> 和 <code>api-docs.md</code> 分别解决什么问题？</li>
+      </ul>
+    </section>
+
+    <footer>
+      Day 7 重点：把能跑的代码整理成能交付、能阅读、能继续维护的小项目。
+    </footer>
+  </main>
+</body>
+</html>
